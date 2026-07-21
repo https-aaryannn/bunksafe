@@ -12,6 +12,7 @@ import { Notes } from './pages/Notes';
 import { Profile } from './pages/Profile';
 import { BottomNav } from './components/BottomNav';
 import { BunkPlannerModal } from './components/BunkPlannerModal';
+import { safeStorage } from './utils/storage';
 
 const GUEST_PROFILE: UserProfile = {
   id: "guest-user-id",
@@ -29,7 +30,7 @@ const GUEST_PROFILE: UserProfile = {
 export default function App() {
   const [user, setUser] = useState<UserProfile>(() => {
     try {
-      const saved = localStorage.getItem('bunksafe_user');
+      const saved = safeStorage.getItem('bunksafe_user');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.name && parsed.name.includes('Adithya')) {
@@ -46,12 +47,13 @@ export default function App() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [activeTab, setActiveTab] = useState<'home' | 'subjects' | 'analytics' | 'profile' | 'notes'>('home');
 
-  // Load user profile and persist session
+  // Load user profile and persist session safely
   useEffect(() => {
     if (user) {
-      localStorage.setItem('bunksafe_user', JSON.stringify(user));
+      safeStorage.setItem('bunksafe_user', JSON.stringify(user));
     }
   }, [user]);
+
 
   // Load correct subjects based on authenticated user or guest
   useEffect(() => {
@@ -82,10 +84,10 @@ export default function App() {
       } else {
         const key = user.isGuest ? 'bunksafe_subjects_guest' : `bunksafe_subjects_user_${user.registerNumber}`;
         try {
-          let saved = localStorage.getItem(key);
+          let saved = safeStorage.getItem(key);
           // Fallback to legacy key for guest
           if (!saved && user.isGuest) {
-            saved = localStorage.getItem('bunksafe_subjects');
+            saved = safeStorage.getItem('bunksafe_subjects');
           }
           if (saved) {
             setSubjects(JSON.parse(saved));
@@ -106,9 +108,9 @@ export default function App() {
     if (user && subjects) {
       const key = user.isGuest ? 'bunksafe_subjects_guest' : `bunksafe_subjects_user_${user.registerNumber}`;
       try {
-        localStorage.setItem(key, JSON.stringify(subjects));
+        safeStorage.setItem(key, JSON.stringify(subjects));
         if (user.isGuest) {
-          localStorage.setItem('bunksafe_subjects', JSON.stringify(subjects));
+          safeStorage.setItem('bunksafe_subjects', JSON.stringify(subjects));
         }
       } catch (e) {
         console.error("Failed to save subjects to local storage:", e);
@@ -205,7 +207,7 @@ export default function App() {
       } else {
         const key = `bunksafe_bunk_notes_user_${user.registerNumber}`;
         try {
-          const saved = localStorage.getItem(key);
+          const saved = safeStorage.getItem(key);
           if (saved) {
             setBunkNotes(JSON.parse(saved));
           } else {
@@ -225,7 +227,7 @@ export default function App() {
     if (user && !user.isGuest) {
       const key = `bunksafe_bunk_notes_user_${user.registerNumber}`;
       try {
-        localStorage.setItem(key, JSON.stringify(bunkNotes));
+        safeStorage.setItem(key, JSON.stringify(bunkNotes));
       } catch (e) {
         console.error("Failed to save bunk notes to local storage:", e);
       }

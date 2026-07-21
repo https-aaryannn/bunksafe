@@ -3,6 +3,7 @@ import { ShieldCheck, BookOpen, User, GraduationCap, ArrowRight, Sparkles, Lock,
 import { motion } from 'motion/react';
 import { UserProfile } from '../types';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { safeStorage } from '../utils/storage';
 
 interface LoginProps {
   onLogin: (profile: UserProfile) => void;
@@ -67,9 +68,9 @@ export const Login: React.FC<LoginProps> = ({ onLogin, initialTab, onClose, id }
   // Initialize registered users in localStorage if empty or contains the old seed user
   useEffect(() => {
     try {
-      const existing = localStorage.getItem('bunksafe_registered_users');
+      const existing = safeStorage.getItem('bunksafe_registered_users');
       if (!existing || existing.includes('Adithya')) {
-        localStorage.setItem('bunksafe_registered_users', JSON.stringify([SEED_USER]));
+        safeStorage.setItem('bunksafe_registered_users', JSON.stringify([SEED_USER]));
       }
     } catch (e) {
       console.error('Failed to initialize registered users:', e);
@@ -133,7 +134,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, initialTab, onClose, id }
       }
     } else {
       try {
-        const stored = localStorage.getItem('bunksafe_registered_users');
+        const stored = safeStorage.getItem('bunksafe_registered_users');
         const users: RegisteredUser[] = stored ? JSON.parse(stored) : [SEED_USER];
         
         const found = users.find(u => u.profile.registerNumber.toUpperCase() === cleanRegNo);
@@ -245,7 +246,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, initialTab, onClose, id }
       }
     } else {
       try {
-        const stored = localStorage.getItem('bunksafe_registered_users');
+        const stored = safeStorage.getItem('bunksafe_registered_users');
         const users: RegisteredUser[] = stored ? JSON.parse(stored) : [SEED_USER];
 
         const exists = users.some(u => u.profile.registerNumber.toUpperCase() === cleanRegNo);
@@ -272,7 +273,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, initialTab, onClose, id }
         };
 
         const updatedUsers = [...users, newUser];
-        localStorage.setItem('bunksafe_registered_users', JSON.stringify(updatedUsers));
+        safeStorage.setItem('bunksafe_registered_users', JSON.stringify(updatedUsers));
 
         setSuccess('Account registered successfully! Logging you in...');
         
