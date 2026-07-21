@@ -1,0 +1,6 @@
+{
+  "name": "BunkSafe",
+  "description": "A premium, mobile-first attendance tracker and bunk planner for KTU students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
