@@ -7,7 +7,8 @@ import { Login } from './pages/Login';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { Home } from './pages/Home';
 import { Subjects } from './pages/Subjects';
-import { Analytics } from './pages/Analytics';
+import { Analytics as AnalyticsPage } from './pages/Analytics';
+import { Analytics } from '@vercel/analytics/react';
 import { Notes } from './pages/Notes';
 import { Profile } from './pages/Profile';
 import { BottomNav } from './components/BottomNav';
@@ -502,7 +503,7 @@ export default function App() {
               exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.2 }}
             >
-              <Analytics 
+              <AnalyticsPage 
                 user={user} 
                 subjects={subjects} 
               />
@@ -699,6 +700,9 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
